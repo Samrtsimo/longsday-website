@@ -87,7 +87,7 @@
     showHSLoading();
 
     var script = document.createElement('script');
-    script.src = 'data/hs_data.js';
+    script.src = 'data/hs_data.js?v=2';
     script.onload = function () {
       if (typeof HS_DATA !== 'undefined' && HS_DATA.length) {
         hsData = HS_DATA;
