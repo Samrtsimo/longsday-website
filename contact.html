@@ -223,26 +223,20 @@
       var btn = form.querySelector('button[type="submit"]');
       var lang = document.documentElement.getAttribute('lang') || 'en';
 
-      // Collect form data
-      var data = {};
-      form.querySelectorAll('input, select, textarea').forEach(function(el) {
-        if (el.name) data[el.name] = el.value;
-      });
-
       // Disable button
       btn.disabled = true;
       btn.textContent = lang === 'zh' ? '⏳ 发送中...' : '⏳ Sending...';
 
       status.style.display = 'none';
 
-      // Add access_key to data object
-      data.access_key = 'b0f00ef8-bce2-4610-a543-e273c74b3d2d';
-      data.subject = '[Longsday] ' + (lang === 'zh' ? '网站询价' : 'Website Inquiry');
+      // Use FormData to avoid CORS preflight issues
+      var formData = new FormData(form);
+      // Ensure subject is set correctly for current language
+      formData.set('subject', '[Longsday] ' + (lang === 'zh' ? '网站询价' : 'Website Inquiry'));
 
       fetch(form.getAttribute('action'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: formData
       })
       .then(function(resp) { return resp.json(); })
       .then(function(json) {
