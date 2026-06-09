@@ -266,8 +266,20 @@ body {
         <textarea id="case-content-en" placeholder="English content..." style="min-height:80px"></textarea>
       </div>
       <div class="form-group">
-        <label>图片</label>
-        <input type="text" id="case-thumb" placeholder="assets/cases/case-xxx.jpg（多图用逗号分隔）">
+        <label>案例图片</label>
+        <div id="image-upload-area" style="border:2px dashed #ddd;border-radius:10px;padding:1.2rem;text-align:center;cursor:pointer;transition:border-color 0.2s;margin-bottom:0.5rem"
+             onclick="document.getElementById('image-file-input').click()"
+             ondragover="this.style.borderColor='#46659b';event.preventDefault()"
+             ondragleave="this.style.borderColor='#ddd'"
+             ondrop="handleImageDrop(event)">
+          <div style="font-size:1.8rem;margin-bottom:0.3rem">🖼️</div>
+          <p style="font-size:0.85rem;color:#888;margin:0">点击或拖拽图片到此处上传</p>
+          <p style="font-size:0.72rem;color:#aaa;margin:0.2rem 0 0">支持 JPG/PNG/WebP，单张 ≤ 2MB。多张图可多次上传。</p>
+        </div>
+        <input type="file" id="image-file-input" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="uploadImage()" multiple>
+        <input type="hidden" id="case-thumb" value="">
+        <div id="image-preview-list" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:0.5rem"></div>
+        <div id="image-upload-status" class="status"></div>
       </div>
 
       <div class="btn-row" style="border-top:1px solid #eee;padding-top:1rem;margin-top:1rem">
@@ -548,25 +560,153 @@ function editCase(id) {
   document.getElementById('case-title-en').value = c.title || '';
   document.getElementById('case-content-en').value = c.summary || '';
 
-  // Handle thumb/thumbs
+  // Handle thumb/thumbs — populate uploadedImages for preview
+  uploadedImages = [];
+  document.getElementById('case-thumb').value = '';
   if (c.thumbs && c.thumbs.length) {
+    uploadedImages = c.thumbs.map(function(p) { return { path: p, name: p.split('/').pop() }; });
     document.getElementById('case-thumb').value = c.thumbs.join(', ');
+  } else if (c.thumb) {
+    uploadedImages = [{ path: c.thumb, name: c.thumb.split('/').pop() }];
+    document.getElementById('case-thumb').value = c.thumb;
+  }
+  updateImagePreview();
+  if (uploadedImages.length) {
+    document.getElementById('image-upload-status').textContent = '✅ ' + uploadedImages.length + ' 张图片（已存在，可继续上传新图）';
+    document.getElementById('image-upload-status').className = 'status ok';
   } else {
-    document.getElementById('case-thumb').value = c.thumb || '';
+    document.getElementById('image-upload-status').textContent = '';
   }
 
   switchTab('tab-edit');
   document.getElementById('edit-status').textContent = '';
 }
 
+// Image tracking for current edit session
+var uploadedImages = []; // { path: 'assets/cases/xxx.jpg' }
+
+function handleImageDrop(e) {
+  e.preventDefault();
+  e.currentTarget.style.borderColor = '#ddd';
+  if (e.dataTransfer.files.length) {
+    uploadFiles(e.dataTransfer.files);
+  }
+}
+
+function uploadImage() {
+  var input = document.getElementById('image-file-input');
+  if (input.files.length) uploadFiles(input.files);
+  input.value = '';
+}
+
+async function uploadFiles(fileList) {
+  var status = document.getElementById('image-upload-status');
+  for (var i = 0; i < fileList.length; i++) {
+    var file = fileList[i];
+    if (file.size > 2 * 1024 * 1024) {
+      toast('⚠️ ' + file.name + ' 超过2MB，已跳过', 'error');
+      continue;
+    }
+    status.textContent = '⏳ 上传中: ' + file.name + '...';
+    status.className = 'status info';
+    try {
+      var path = await uploadImageToGitHub(file);
+      uploadedImages.push({ path: path, name: file.name });
+      updateImagePreview();
+      updateThumbField();
+      toast('✅ ' + file.name + ' 已上传', 'success');
+    } catch(e) {
+      toast('❌ ' + file.name + ': ' + e.message, 'error');
+    }
+  }
+  status.textContent = uploadedImages.length ? '✅ ' + uploadedImages.length + ' 张图片已就绪' : '';
+  status.className = uploadedImages.length ? 'status ok' : '';
+}
+
+async function uploadImageToGitHub(file) {
+  var token = getGitHubToken();
+  if (!token) throw new Error('请先配置 GitHub Token');
+
+  // Read file as base64
+  var base64 = await new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function() {
+      // Strip data:... prefix
+      var b64 = reader.result.split(',')[1];
+      resolve(b64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  // Sanitize filename
+  var safeName = file.name.replace(/[^a-zA-Z0-9._()-]/g, '-').replace(/\s+/g, '-');
+  var path = 'assets/cases/' + safeName;
+
+  // Upload to GitHub
+  var resp = await fetch(GITHUB_API + '/contents/' + encodeURIComponent(path), {
+    method: 'PUT',
+    headers: {
+      'Authorization': 'token ' + token,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      message: 'admin: upload case image ' + safeName,
+      content: base64
+    })
+  });
+
+  if (!resp.ok) {
+    var err = await resp.json().catch(function() { return {}; });
+    if (resp.status === 422) throw new Error('文件已存在，请改名');
+    throw new Error(err.message || 'HTTP ' + resp.status);
+  }
+
+  logPublish('🖼️ 上传图片: ' + path);
+  return path;
+}
+
+function removeImage(index) {
+  uploadedImages.splice(index, 1);
+  updateImagePreview();
+  updateThumbField();
+}
+
+function updateImagePreview() {
+  var container = document.getElementById('image-preview-list');
+  container.innerHTML = uploadedImages.map(function(img, i) {
+    return '<div style="position:relative;width:100px;height:80px;border:1px solid #ddd;border-radius:6px;overflow:hidden;background:#f5f5f5;display:flex;align-items:center;justify-content:center">' +
+      '<span style="font-size:0.65rem;color:#888;text-align:center;padding:4px;word-break:break-all">' + esc(img.name) + '</span>' +
+      '<button onclick="removeImage(' + i + ')" style="position:absolute;top:2px;right:2px;background:rgba(231,76,60,0.9);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;line-height:1">✕</button>' +
+      '</div>';
+  }).join('');
+}
+
+function updateThumbField() {
+  var paths = uploadedImages.map(function(img) { return img.path; });
+  var val = paths.join(', ');
+  document.getElementById('case-thumb').value = val;
+
+  // If single image, set as thumb; if multiple, set as thumbs array
+  if (paths.length === 1) {
+    document.getElementById('case-thumb').value = paths[0];
+  } else if (paths.length > 1) {
+    document.getElementById('case-thumb').value = paths.join(', ');
+  }
+}
+
 function clearEditForm() {
   currentEditId = null;
+  uploadedImages = [];
   document.getElementById('edit-mode-title').textContent = '✏️ 新增案例';
   document.getElementById('edit-case-id').value = '';
   ['case-date','case-tag-en','case-tag-zh','case-title-zh','case-content-zh',
    'case-title-en','case-content-en','case-thumb'].forEach(function(id) {
     document.getElementById(id).value = '';
   });
+  document.getElementById('image-preview-list').innerHTML = '';
+  document.getElementById('image-upload-status').textContent = '';
   // Auto-fill date
   var now = new Date();
   document.getElementById('case-date').value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
@@ -584,7 +724,6 @@ function readCaseForm() {
     return null;
   }
 
-  var thumbRaw = document.getElementById('case-thumb').value.trim();
   var c = {
     id: currentEditId || ('case-' + new Date().toISOString().slice(0,7).replace('-','') + '-' + Math.random().toString(36).substring(2, 6)),
     date: document.getElementById('case-date').value.trim(),
@@ -596,11 +735,18 @@ function readCaseForm() {
     summaryZh: contentZh
   };
 
-  // Handle multiple images
-  if (thumbRaw.includes(',')) {
-    c.thumbs = thumbRaw.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
-  } else if (thumbRaw) {
-    c.thumb = thumbRaw;
+  // Use uploaded images if any, otherwise use text field
+  if (uploadedImages.length > 1) {
+    c.thumbs = uploadedImages.map(function(img) { return img.path; });
+  } else if (uploadedImages.length === 1) {
+    c.thumb = uploadedImages[0].path;
+  } else {
+    var thumbRaw = document.getElementById('case-thumb').value.trim();
+    if (thumbRaw.includes(',')) {
+      c.thumbs = thumbRaw.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+    } else if (thumbRaw) {
+      c.thumb = thumbRaw;
+    }
   }
 
   return c;
