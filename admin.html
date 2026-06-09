@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Longsday Admin — 案例后台管理</title>
+<style>
+/* Minimal admin styles — independent of main site */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f5f5f5; color: #1c1b19; line-height: 1.6;
+}
+
+.admin-header {
+  background: #162d59; color: #fff;
+  padding: 1rem 2rem;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.admin-header h1 { font-size: 1.1rem; font-weight: 600; }
+.admin-header a { color: rgba(255,255,255,0.7); font-size: 0.85rem; text-decoration: none; }
+.admin-header a:hover { color: #fff; }
+
+.admin-container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.panel {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+}
+
+.panel h2 {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.form-group { margin-bottom: 1.1rem; }
+.form-group label {
+  display: block;
+  font-size: 0.85rem; font-weight: 600;
+  margin-bottom: 0.3rem; color: #333;
+}
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%; padding: 10px 14px;
+  border: 1px solid #ddd; border-radius: 8px;
+  font-size: 0.9rem; font-family: inherit;
+  transition: border-color 0.2s;
+}
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none; border-color: #46659b;
+  box-shadow: 0 0 0 3px rgba(70,101,155,0.1);
+}
+.form-group textarea { resize: vertical; min-height: 140px; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 24px; border: none; border-radius: 24px;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-primary { background: #162d59; color: #fff; }
+.btn-primary:hover { background: #1e3d73; }
+.btn-secondary { background: #f0f0f0; color: #333; }
+.btn-secondary:hover { background: #e0e0e0; }
+.btn-danger { background: #e74c3c; color: #fff; }
+.btn-success { background: #27ae60; color: #fff; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+
+.result-box {
+  background: #f9fafb; border: 1px solid #e5e5e5;
+  border-radius: 8px; padding: 1.25rem;
+  margin-top: 1rem; max-height: 400px; overflow-y: auto;
+  font-size: 0.88rem; white-space: pre-wrap; word-break: break-word;
+}
+
+.status { font-size: 0.85rem; margin-top: 0.5rem; }
+.status.ok { color: #27ae60; }
+.status.err { color: #e74c3c; }
+.status.info { color: #46659b; }
+
+.api-config { margin-bottom: 1.5rem; padding: 1rem; background: #fef9e7; border-radius: 8px; border: 1px solid #f0e6b0; }
+.api-config summary { cursor: pointer; font-weight: 600; font-size: 0.85rem; color: #8a6d14; }
+.api-config .api-row { display: flex; gap: 0.75rem; margin-top: 0.75rem; align-items: end; }
+.api-config input { flex: 1; }
+
+.instruction {
+  margin-top: 1.5rem; padding: 1rem;
+  background: #f0f7ff; border-radius: 8px;
+  font-size: 0.82rem; color: #555;
+  border-left: 3px solid #46659b;
+}
+.instruction h4 { margin-bottom: 0.5rem; color: #162d59; }
+.instruction ol { padding-left: 1.2rem; }
+.instruction code {
+  background: #e8e8e8; padding: 1px 6px;
+  border-radius: 4px; font-size: 0.8rem;
+}
+
+/* Login overlay */
+.login-overlay {
+  position: fixed; inset: 0;
+  background: #162d59;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+}
+.login-box {
+  background: #fff; border-radius: 16px;
+  padding: 3rem; width: 380px; max-width: 90vw;
+  text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.login-box h2 { margin-bottom: 0.5rem; color: #162d59; }
+.login-box p { font-size: 0.85rem; color: #888; margin-bottom: 1.5rem; }
+.login-box input {
+  width: 100%; padding: 12px 16px;
+  border: 2px solid #ddd; border-radius: 8px;
+  font-size: 1rem; text-align: center; font-family: inherit;
+}
+.login-box input:focus { outline: none; border-color: #46659b; }
+.login-box .btn { margin-top: 1rem; width: 100%; justify-content: center; }
+
+@media (max-width: 768px) {
+  .admin-container { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ========== Simple Password Gate ========== -->
+<div class="login-overlay" id="login-gate">
+  <div class="login-box">
+    <h2>🔐 Longsday 后台</h2>
+    <p>请输入管理密码</p>
+    <input type="password" id="login-pwd" placeholder="管理密码" autocomplete="off">
+    <button class="btn btn-primary" onclick="doLogin()">进入后台</button>
+    <div id="login-msg" style="margin-top:0.75rem;font-size:0.82rem;color:#e74c3c"></div>
+    <p style="margin-top:1.5rem;font-size:0.72rem;color:#aaa">
+      默认密码：<code>longsday2026</code>（进入后可修改，见下方说明）
+    </p>
+  </div>
+</div>
+
+<!-- ========== Admin Shell ========== -->
+<div id="admin-shell" style="display:none">
+
+<header class="admin-header">
+  <h1>📦 Longsday 案例后台管理</h1>
+  <div>
+    <a href="cases.html" target="_blank">查看案例页 →</a>
+    &nbsp;&nbsp;
+    <a href="#" onclick="doLogout()">退出</a>
+  </div>
+</header>
+
+<div class="admin-container">
+
+  <!-- LEFT: Input Form -->
+  <div class="panel">
+    <h2>📝 输入案例内容</h2>
+
+    <details class="api-config">
+      <summary>⚙️ API 设置（点击展开）</summary>
+      <p style="font-size:0.8rem;color:#888;margin-top:0.5rem">
+        需要 DeepSeek API Key 来翻译。Key 仅保存在本浏览器，不上传服务器。
+      </p>
+      <div class="api-row">
+        <input type="password" id="api-key" placeholder="sk-... (DeepSeek API Key)" style="flex:2">
+        <button class="btn btn-secondary" onclick="saveApiKey()" style="font-size:0.8rem">保存</button>
+        <button class="btn btn-secondary" onclick="testApiKey()" style="font-size:0.8rem">测试</button>
+      </div>
+      <p id="api-status" style="font-size:0.75rem;margin-top:0.5rem"></p>
+    </details>
+
+    <div class="form-group">
+      <label>日期</label>
+      <input type="text" id="case-date" placeholder="2026-06" value="">
+    </div>
+    <div class="form-group">
+      <label>分类标签 (英文) / 分类标签 (中文)</label>
+      <div style="display:flex;gap:0.5rem">
+        <input type="text" id="case-tag-en" placeholder="e.g., Sea Freight" style="flex:1">
+        <input type="text" id="case-tag-zh" placeholder="例如：海运" style="flex:1">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>标题 (中文) *</label>
+      <input type="text" id="case-title-zh" placeholder="案例中文标题..." required>
+    </div>
+    <div class="form-group">
+      <label>内容 (中文) *</label>
+      <textarea id="case-content-zh" placeholder="案例中文内容摘要..." required></textarea>
+    </div>
+    <div class="form-group">
+      <label>图片文件名（可选，上传到 assets/cases/ 目录下）</label>
+      <input type="text" id="case-thumb" placeholder="例如：case-005.jpg">
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="translateCase()" id="btn-translate">🌐 翻译为英文</button>
+      <button class="btn btn-secondary" onclick="clearForm()">清空</button>
+    </div>
+    <div id="translate-status" class="status"></div>
+  </div>
+
+  <!-- RIGHT: Preview + Output -->
+  <div class="panel">
+    <h2>👁️ 预览 & 生成代码</h2>
+
+    <div class="form-group">
+      <label>英文标题（翻译后自动填充，可手动修改）</label>
+      <input type="text" id="case-title-en" placeholder="English title will appear here...">
+    </div>
+    <div class="form-group">
+      <label>英文内容（翻译后自动填充，可手动修改）</label>
+      <textarea id="case-content-en" placeholder="English content will appear here..." style="min-height:100px"></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-success" onclick="generateCode()">📋 生成案例代码</button>
+      <button class="btn btn-secondary" onclick="copyCode()">📎 复制代码</button>
+    </div>
+
+    <div class="result-box" id="code-output" style="display:none"></div>
+
+    <div class="instruction">
+      <h4>📖 使用说明</h4>
+      <ol>
+        <li>在左侧输入案例的<strong>中文</strong>标题和内容</li>
+        <li>点击「翻译为英文」→ 右侧自动填充英文翻译</li>
+        <li>检查和修改英文翻译（AI翻译可能需要微调）</li>
+        <li>点击「生成案例代码」→ 自动生成 JS 代码片段</li>
+        <li>点击「复制代码」→ 打开 <code>data/cases.js</code> 粘贴到 <code>LONGSDAY_CASES</code> 数组里</li>
+        <li>刷新 <code>cases.html</code> 即可看到新案例</li>
+      </ol>
+      <p style="margin-top:0.75rem;font-size:0.78rem;color:#888">
+        💡 另：命令行批量上传 Word 文档 → <code>python tools/upload_case.py your-file.docx</code>
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Work Log -->
+<div class="panel" style="max-width:1100px;margin:0 auto 2rem;padding:1.5rem">
+  <h2>📋 操作日志</h2>
+  <div id="work-log" style="font-size:0.82rem;color:#666;max-height:200px;overflow-y:auto">
+    <p>— 等待操作 —</p>
+  </div>
+</div>
+
+</div><!-- /admin-shell -->
+
+<script>
+/* ============================================================
+   Longsday Admin — Self-contained JS (no external deps)
+   ============================================================ */
+
+var ADMIN_PASSWORD = 'longsday2026';
+var DEEPSEEK_API = 'https://api.deepseek.com/chat/completions';
+
+// --- Login ---
+function doLogin() {
+  var pwd = document.getElementById('login-pwd').value;
+  if (pwd === ADMIN_PASSWORD) {
+    document.getElementById('login-gate').style.display = 'none';
+    document.getElementById('admin-shell').style.display = 'block';
+    loadApiKey();
+    log('✅ 已登录后台');
+  } else {
+    document.getElementById('login-msg').textContent = '密码错误，请重试';
+  }
+}
+
+function doLogout() {
+  document.getElementById('admin-shell').style.display = 'none';
+  document.getElementById('login-gate').style.display = 'flex';
+  document.getElementById('login-pwd').value = '';
+}
+
+// Enter key to login
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('login-pwd').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') doLogin();
+  });
+
+  // Auto-fill today's date
+  var now = new Date();
+  var yyyy = now.getFullYear();
+  var mm = String(now.getMonth() + 1).padStart(2, '0');
+  document.getElementById('case-date').value = yyyy + '-' + mm;
+});
+
+// --- API Key ---
+function saveApiKey() {
+  var key = document.getElementById('api-key').value.trim();
+  if (key) {
+    localStorage.setItem('longsday_deepseek_key', key);
+    document.getElementById('api-status').textContent = '✅ Key 已保存';
+    document.getElementById('api-status').className = 'status ok';
+    log('🔑 API Key 已保存');
+  }
+}
+
+function loadApiKey() {
+  var key = localStorage.getItem('longsday_deepseek_key');
+  if (key) {
+    document.getElementById('api-key').value = key;
+    document.getElementById('api-status').textContent = '✅ 已加载已保存的 Key';
+    document.getElementById('api-status').className = 'status ok';
+  }
+}
+
+function getApiKey() {
+  return document.getElementById('api-key').value.trim() ||
+         localStorage.getItem('longsday_deepseek_key') || '';
+}
+
+async function testApiKey() {
+  var key = getApiKey();
+  if (!key) {
+    document.getElementById('api-status').textContent = '❌ 请先输入 API Key';
+    document.getElementById('api-status').className = 'status err';
+    return;
+  }
+  document.getElementById('api-status').textContent = '⏳ 测试中...';
+  try {
+    var resp = await fetch(DEEPSEEK_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [{ role: 'user', content: 'Say "ok" and nothing else.' }],
+        max_tokens: 10
+      })
+    });
+    if (resp.ok) {
+      document.getElementById('api-status').textContent = '✅ API Key 有效！';
+      document.getElementById('api-status').className = 'status ok';
+      saveApiKey();
+    } else {
+      var err = await resp.json();
+      document.getElementById('api-status').textContent = '❌ API 错误: ' + (err.error?.message || resp.status);
+      document.getElementById('api-status').className = 'status err';
+    }
+  } catch(e) {
+    document.getElementById('api-status').textContent = '❌ 网络错误: ' + e.message;
+    document.getElementById('api-status').className = 'status err';
+  }
+}
+
+// --- Translation ---
+async function translateCase() {
+  var titleZh = document.getElementById('case-title-zh').value.trim();
+  var contentZh = document.getElementById('case-content-zh').value.trim();
+
+  if (!titleZh || !contentZh) {
+    alert('请先填写中文标题和内容！');
+    return;
+  }
+
+  var key = getApiKey();
+  if (!key) {
+    alert('请先在 API 设置中输入 DeepSeek API Key！');
+    return;
+  }
+
+  var btn = document.getElementById('btn-translate');
+  var status = document.getElementById('translate-status');
+  btn.disabled = true;
+  btn.textContent = '⏳ 翻译中...';
+  status.textContent = '⏳ 正在调用 DeepSeek 翻译...';
+  status.className = 'status info';
+  log('🌐 开始翻译: ' + titleZh);
+
+  try {
+    // Translate title
+    var titleResp = await translateText(key, '将以下中文标题翻译为专业、地道的英文（仅返回英文译文，不要解释）:\n\n' + titleZh);
+    var titleEn = titleResp.trim();
+
+    // Translate content
+    var contentResp = await translateText(key,
+      '将以下中文物流案例内容翻译为专业、地道的商务英文。保持专业术语准确（如DDP、FBA、FCL、LCL等不做翻译）。仅返回英文译文，不要解释:\n\n' + contentZh);
+    var contentEn = contentResp.trim();
+
+    document.getElementById('case-title-en').value = titleEn;
+    document.getElementById('case-content-en').value = contentEn;
+
+    status.textContent = '✅ 翻译完成！请检查英文内容，必要时微调。';
+    status.className = 'status ok';
+    log('✅ 翻译完成: ' + titleEn.substring(0, 60) + '...');
+  } catch(e) {
+    status.textContent = '❌ 翻译失败: ' + e.message;
+    status.className = 'status err';
+    log('❌ 翻译失败: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🌐 翻译为英文';
+  }
+}
+
+async function translateText(key, prompt) {
+  var resp = await fetch(DEEPSEEK_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+    body: JSON.stringify({
+      model: 'deepseek-chat',
+      messages: [
+        { role: 'system', content: '你是一个专业的中英翻译助手，擅长物流和国际贸易领域的翻译。返回的英文必须专业、地道、简洁，适合商务网站使用。只返回翻译结果，不要解释、不要问问题。' },
+        { role: 'user', content: prompt }
+      ],
+      max_tokens: 2048,
+      temperature: 0.3
+    })
+  });
+
+  if (!resp.ok) {
+    var err = await resp.json().catch(function() { return {}; });
+    throw new Error(err.error?.message || 'HTTP ' + resp.status);
+  }
+
+  var data = await resp.json();
+  return data.choices[0].message.content;
+}
+
+// --- Generate Code ---
+function generateCode() {
+  var titleEn = document.getElementById('case-title-en').value.trim();
+  var contentEn = document.getElementById('case-content-en').value.trim();
+  var titleZh = document.getElementById('case-title-zh').value.trim();
+  var contentZh = document.getElementById('case-content-zh').value.trim();
+  var date = document.getElementById('case-date').value.trim();
+  var tagEn = document.getElementById('case-tag-en').value.trim();
+  var tagZh = document.getElementById('case-tag-zh').value.trim();
+  var thumb = document.getElementById('case-thumb').value.trim();
+
+  if (!titleEn || !contentEn || !titleZh || !contentZh) {
+    alert('请确保中英文标题和内容都已填写！');
+    return;
+  }
+
+  var caseId = 'case-' + date.replace(/[^0-9]/g, '') + '-' + Math.random().toString(36).substring(2, 6);
+
+  var code = '  {\n' +
+    '    id: "' + caseId + '",\n' +
+    '    date: "' + date + '",\n' +
+    '    tag: "' + tagEn + '",\n' +
+    '    tagZh: "' + tagZh + '",\n' +
+    '    title: ' + JSON.stringify(titleEn) + ',\n' +
+    '    titleZh: ' + JSON.stringify(titleZh) + ',\n' +
+    '    summary: ' + JSON.stringify(contentEn) + ',\n' +
+    '    summaryZh: ' + JSON.stringify(contentZh) + ',\n' +
+    '    thumb: "' + (thumb ? 'assets/cases/' + thumb : '') + '"\n' +
+    '  },';
+
+  var output = document.getElementById('code-output');
+  output.style.display = 'block';
+  output.textContent = code;
+  log('📋 已生成案例代码: ' + caseId);
+
+  // Scroll to output
+  output.scrollIntoView({ behavior: 'smooth' });
+}
+
+function copyCode() {
+  var output = document.getElementById('code-output');
+  if (!output.textContent) {
+    alert('请先生成代码！');
+    return;
+  }
+  navigator.clipboard.writeText(output.textContent).then(function() {
+    log('📎 代码已复制到剪贴板！请粘贴到 data/cases.js 的 LONGSDAY_CASES 数组里');
+    alert('✅ 代码已复制！\n\n请打开 data/cases.js，粘贴到 LONGSDAY_CASES 数组的最前面。');
+  }).catch(function() {
+    // Fallback
+    output.select();
+    document.execCommand('copy');
+    log('📎 代码已复制（fallback方式）');
+  });
+}
+
+function clearForm() {
+  ['case-title-zh','case-content-zh','case-title-en','case-content-en',
+   'case-thumb','case-tag-en','case-tag-zh'].forEach(function(id) {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('code-output').style.display = 'none';
+  document.getElementById('translate-status').textContent = '';
+  log('🗑️ 已清空表单');
+}
+
+// --- Work Log ---
+function log(msg) {
+  var logDiv = document.getElementById('work-log');
+  var time = new Date().toLocaleTimeString('zh-CN');
+  if (logDiv.querySelector('p') && logDiv.querySelector('p').textContent === '— 等待操作 —') {
+    logDiv.innerHTML = '';
+  }
+  logDiv.innerHTML = '<p>[' + time + '] ' + msg + '</p>' + logDiv.innerHTML;
+}
+</script>
+
+</body>
+</html>

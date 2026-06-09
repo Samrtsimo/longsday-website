@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/contact.js": {
+      "memory": 512,
+      "maxDuration": 10
+    }
+  },
+  "env": {
+    "SMTP_HOST": "smtphz.qiye.163.com",
+    "SMTP_PORT": "465",
+    "SMTP_USER": "lily-qian@longsday.com"
+  }
+}

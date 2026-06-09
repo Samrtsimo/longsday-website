@@ -1,0 +1,13 @@
+{
+  "name": "longsday-website",
+  "version": "1.0.0",
+  "description": "Longsday International Freight Forwarding — Company Website",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.0"
+  }
+}

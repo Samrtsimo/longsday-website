@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Longsday | 联系我们</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23162d59'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>L</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/logo.png" alt="Longsday Logo">
+      <span>Longsday</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html" data-lang="zh">首页</a><a href="index.html" data-lang="en">Home</a></li>
+      <li><a href="services.html" data-lang="zh">服务</a><a href="services.html" data-lang="en">Services</a></li>
+      <li><a href="about.html" data-lang="zh">关于</a><a href="about.html" data-lang="en">About</a></li>
+      <li><a href="tools.html" data-lang="zh">工具</a><a href="tools.html" data-lang="en">Tools</a></li>
+      <li><a href="cases.html" data-lang="zh">案例</a><a href="cases.html" data-lang="en">Cases</a></li>
+      <li><a href="contact.html" data-lang="zh">联系</a><a href="contact.html" data-lang="en">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-switch">
+        <button data-lang-val="en">EN</button>
+        <button data-lang-val="zh">中文</button>
+      </div>
+      <a href="contact.html" class="nav-cta" data-lang="zh">获取报价</a>
+      <a href="contact.html" class="nav-cta" data-lang="en">Get Quote</a>
+      <button class="menu-toggle" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</nav>
+
+<section class="page-header">
+  <h1 data-lang="zh">联系我们</h1>
+  <h1 data-lang="en">Contact Us</h1>
+  <p data-lang="zh">告诉我们您的物流需求，24小时内回复</p>
+  <p data-lang="en">Tell us your logistics needs — we'll reply within 24 hours</p>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="contact-grid">
+
+      <!-- Contact Info -->
+      <div>
+        <h2 data-lang="zh" style="margin-bottom:1.5rem">联系方式</h2>
+        <h2 data-lang="en" style="margin-bottom:1.5rem">Contact Information</h2>
+
+        <div class="contact-info-item">
+          <div class="contact-icon">👤</div>
+          <div>
+            <h4 data-lang="zh">联系人</h4>
+            <h4 data-lang="en">Contact Person</h4>
+            <p>YaliQian (Sales Manager)</p>
+          </div>
+        </div>
+
+        <div class="contact-info-item">
+          <div class="contact-icon">📧</div>
+          <div>
+            <h4 data-lang="zh">邮箱</h4>
+            <h4 data-lang="en">Email</h4>
+            <p>lily-qian@longsday.com</p>
+          </div>
+        </div>
+
+        <div class="contact-info-item">
+          <div class="contact-icon">📱</div>
+          <div>
+            <h4 data-lang="zh">电话 / WhatsApp / 微信</h4>
+            <h4 data-lang="en">Phone / WhatsApp / WeChat</h4>
+            <p>+86 186-5828-2025</p>
+          </div>
+        </div>
+
+        <div class="contact-info-item">
+          <div class="contact-icon">💬</div>
+          <div>
+            <h4>QQ</h4>
+            <p>1773111740</p>
+          </div>
+        </div>
+
+        <div class="contact-info-item">
+          <div class="contact-icon">📍</div>
+          <div>
+            <h4 data-lang="zh">地址</h4>
+            <h4 data-lang="en">Address</h4>
+            <p data-lang="zh">浙江省宁波市鄞州区姚隘路796号1906室</p>
+            <p data-lang="en">Room 1906, No.796 Yao'ai Road, Yinzhou District, Ningbo, Zhejiang, China</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="contact-form">
+        <h3 data-lang="zh" style="margin-bottom:1.5rem">发送询价</h3>
+        <h3 data-lang="en" style="margin-bottom:1.5rem">Send an Inquiry</h3>
+
+        <form id="contact-form" action="/api/contact" method="POST">
+          <div class="form-row">
+            <div class="form-group">
+              <label data-lang="zh">姓名 *</label>
+              <label data-lang="en">Name *</label>
+              <input type="text" name="name" required>
+            </div>
+            <div class="form-group">
+              <label data-lang="zh">公司</label>
+              <label data-lang="en">Company</label>
+              <input type="text" name="company">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label data-lang="zh">邮箱 *</label>
+              <label data-lang="en">Email *</label>
+              <input type="email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label data-lang="zh">电话</label>
+              <label data-lang="en">Phone</label>
+              <input type="tel" name="phone">
+            </div>
+          </div>
+          <div class="form-group">
+            <label data-lang="zh">运输方式</label>
+            <label data-lang="en">Shipping Mode</label>
+            <select name="mode">
+              <option value="" data-lang="zh">请选择...</option>
+              <option value="" data-lang="en">Select...</option>
+              <option value="ocean" data-lang="zh">海运</option>
+              <option value="ocean" data-lang="en">Ocean Freight</option>
+              <option value="air" data-lang="zh">空运</option>
+              <option value="air" data-lang="en">Air Freight</option>
+              <option value="railway" data-lang="zh">铁路</option>
+              <option value="railway" data-lang="en">Railway</option>
+              <option value="ddp" data-lang="zh">DDP 税后到门</option>
+              <option value="ddp" data-lang="en">DDP Door-to-Door</option>
+              <option value="fba" data-lang="zh">Amazon FBA</option>
+              <option value="fba" data-lang="en">Amazon FBA</option>
+              <option value="other" data-lang="zh">其他</option>
+              <option value="other" data-lang="en">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label data-lang="zh">留言 *</label>
+            <label data-lang="en">Message *</label>
+            <textarea name="message" rows="4" required data-lang-zh-placeholder="请描述您的货物类型、起运地、目的地、时效要求等信息..." data-lang-en-placeholder="Please describe your cargo type, origin, destination, timeline, etc..." placeholder="请描述您的货物类型、起运地、目的地、时效要求等信息..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center" data-lang="zh">📩 发送询价</button>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center" data-lang="en">📩 Send Inquiry</button>
+        </form>
+        <div id="form-status" style="display:none;text-align:center;margin-top:1rem;padding:12px;border-radius:8px;font-size:0.9rem"></div>
+
+        <p style="font-size:0.78rem;color:var(--gray-500);margin-top:1rem;text-align:center" data-lang="zh">
+          💡 提交后我们会在24小时内通过邮件回复。如需即时沟通，请直接致电或添加微信。
+        </p>
+        <p style="font-size:0.78rem;color:var(--gray-500);margin-top:1rem;text-align:center" data-lang="en">
+          💡 We'll reply by email within 24 hours. For immediate assistance, please call or add us on WeChat.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <h4>Longsday</h4>
+      <p data-lang="zh">国际供应链 · 宁波<br>Delivery goods to you from worldwide</p>
+      <p data-lang="en">Supply Chain · Ningbo<br>Delivery goods to you from worldwide</p>
+    </div>
+    <div>
+      <h4 data-lang="zh">服务</h4><h4 data-lang="en">Services</h4>
+      <a href="services.html" data-lang="zh">海运</a><a href="services.html" data-lang="en">Ocean Freight</a>
+      <a href="services.html" data-lang="zh">空运</a><a href="services.html" data-lang="en">Air Freight</a>
+      <a href="services.html" data-lang="zh">铁路</a><a href="services.html" data-lang="en">Railway</a>
+      <a href="services.html" data-lang="zh">DDP / FBA</a><a href="services.html" data-lang="en">DDP / FBA</a>
+    </div>
+    <div>
+      <h4 data-lang="zh">工具</h4><h4 data-lang="en">Tools</h4>
+      <a href="tools.html" data-lang="zh">HS 编码查询</a><a href="tools.html" data-lang="en">HS Code Lookup</a>
+      <a href="tools.html" data-lang="zh">集装箱追踪</a><a href="tools.html" data-lang="en">Container Tracking</a>
+      <a href="cases.html" data-lang="zh">案例</a><a href="cases.html" data-lang="en">Case Studies</a>
+    </div>
+    <div>
+      <h4 data-lang="zh">联系方式</h4><h4 data-lang="en">Contact</h4>
+      <a href="mailto:lily-qian@longsday.com">lily-qian@longsday.com</a>
+      <a href="tel:+8618658282025">+86 186-5828-2025</a>
+      <a href="contact.html" data-lang="zh">宁波市鄞州区姚隘路796号</a>
+      <a href="contact.html" data-lang="en">Ningbo, Zhejiang, China</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Longsday. All rights reserved.</span>
+    <span data-lang="zh">宁波隆事达供应链有限公司</span>
+    <span data-lang="en">Ningbo Longsday Supply Chain Co.,Ltd</span>
+  </div>
+</footer>
+
+<script src="js/i18n.js"></script>
+<script src="js/main.js"></script>
+<script>
+/* Contact form AJAX submit */
+(function() {
+  'use strict';
+  document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('contact-form');
+    var status = document.getElementById('form-status');
+    if (!form || !status) return;
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      var btn = form.querySelector('button[type="submit"]');
+      var lang = document.documentElement.getAttribute('lang') || 'en';
+
+      // Collect form data
+      var data = {};
+      form.querySelectorAll('input, select, textarea').forEach(function(el) {
+        if (el.name) data[el.name] = el.value;
+      });
+
+      // Disable button
+      btn.disabled = true;
+      btn.textContent = lang === 'zh' ? '⏳ 发送中...' : '⏳ Sending...';
+
+      status.style.display = 'none';
+
+      fetch(form.getAttribute('action'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      .then(function(resp) { return resp.json().then(function(json) { return { ok: resp.ok, json: json }; }); })
+      .then(function(result) {
+        status.style.display = 'block';
+        if (result.ok) {
+          status.style.background = '#e8f5e9';
+          status.style.color = '#2e7d32';
+          status.textContent = lang === 'zh'
+            ? '✅ 已收到您的询价！我们将在24小时内通过邮件回复。'
+            : '✅ Inquiry received! We will reply by email within 24 hours.';
+          form.reset();
+        } else {
+          status.style.background = '#fce4ec';
+          status.style.color = '#c62828';
+          status.textContent = lang === 'zh'
+            ? '❌ 发送失败，请直接致电或发送邮件至 lily-qian@longsday.com'
+            : '❌ Failed to send. Please call us or email lily-qian@longsday.com';
+        }
+      })
+      .catch(function() {
+        status.style.display = 'block';
+        status.style.background = '#fce4ec';
+        status.style.color = '#c62828';
+        status.textContent = lang === 'zh'
+          ? '❌ 网络错误，请直接致电或发送邮件至 lily-qian@longsday.com'
+          : '❌ Network error. Please call us or email lily-qian@longsday.com';
+      })
+      .finally(function() {
+        btn.disabled = false;
+        btn.textContent = lang === 'zh' ? '📩 发送询价' : '📩 Send Inquiry';
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logistics Tools — Longsday | 物流工具</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23162d59'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>L</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/logo.png" alt="Longsday Logo">
+      <span>Longsday</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html" data-lang="zh">首页</a><a href="index.html" data-lang="en">Home</a></li>
+      <li><a href="services.html" data-lang="zh">服务</a><a href="services.html" data-lang="en">Services</a></li>
+      <li><a href="about.html" data-lang="zh">关于</a><a href="about.html" data-lang="en">About</a></li>
+      <li><a href="tools.html" data-lang="zh">工具</a><a href="tools.html" data-lang="en">Tools</a></li>
+      <li><a href="cases.html" data-lang="zh">案例</a><a href="cases.html" data-lang="en">Cases</a></li>
+      <li><a href="contact.html" data-lang="zh">联系</a><a href="contact.html" data-lang="en">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-switch">
+        <button data-lang-val="en">EN</button>
+        <button data-lang-val="zh">中文</button>
+      </div>
+      <a href="contact.html" class="nav-cta" data-lang="zh">获取报价</a>
+      <a href="contact.html" class="nav-cta" data-lang="en">Get Quote</a>
+      <button class="menu-toggle" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</nav>
+
+<section class="page-header">
+  <h1 data-lang="zh">物流工具</h1>
+  <h1 data-lang="en">Logistics Tools</h1>
+  <p data-lang="zh">HS 编码查询 · 集装箱/提单号追踪</p>
+  <p data-lang="en">HS Code Lookup · Container / BL Tracking</p>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+
+    <!-- Tabs -->
+    <div class="tools-tabs">
+      <button class="tool-tab active" data-tool="hscode">
+        <span data-lang="zh">🔍 HS 编码查询</span>
+        <span data-lang="en">🔍 HS Code Lookup</span>
+      </button>
+      <button class="tool-tab" data-tool="tracking">
+        <span data-lang="zh">🚢 货物追踪</span>
+        <span data-lang="en">🚢 Shipment Tracking</span>
+      </button>
+    </div>
+
+    <!-- HS Code Panel -->
+    <div class="tool-panel active" data-panel="hscode">
+      <div class="tool-card">
+        <h3 data-lang="zh">HS 编码查询</h3>
+        <h3 data-lang="en">HS Code Lookup</h3>
+        <p data-lang="zh">输入 HS 编码（如 847130）或商品名称查询对应的海关编码分类。</p>
+        <p data-lang="en">Enter an HS code (e.g., 847130) or product name to find the corresponding customs classification.</p>
+
+        <div class="search-box">
+          <input type="text" id="hs-input" data-lang-zh-placeholder="输入 HS 编码或商品名称..." data-lang-en-placeholder="Enter HS code or product name..." placeholder="输入 HS 编码或商品名称...">
+          <button id="hs-search" data-lang="zh">查询</button>
+          <button id="hs-search" data-lang="en">Search</button>
+        </div>
+
+        <div class="tool-result" id="hs-result"></div>
+
+        <div class="tool-note">
+          <span data-lang="zh">💡 数据来源：中国海关总署 & WCO 协调制度。完整分类请访问 </span>
+          <span data-lang="en">💡 Data source: China Customs & WCO Harmonized System. For full classification visit </span>
+          <a href="http://www.hscode.net/IntegrateQueries/QueryYS" target="_blank" rel="noopener">hscode.net</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tracking Panel -->
+    <div class="tool-panel" data-panel="tracking">
+      <div class="tool-card">
+        <h3 data-lang="zh">集装箱 / 提单号追踪</h3>
+        <h3 data-lang="en">Container / BL Tracking</h3>
+        <p data-lang="zh">输入集装箱号或提单号，自动识别船公司并跳转至官方追踪页面。</p>
+        <p data-lang="en">Enter a container number or BL number — we'll auto-detect the carrier and link to their official tracking.</p>
+
+        <div class="search-box" style="flex-wrap:wrap">
+          <select id="track-type" style="padding:12px 16px;border:2px solid var(--gray-200);border-radius:28px;font-size:0.9rem;font-family:inherit;background:var(--cream-light);cursor:pointer">
+            <option value="container" data-lang="zh">集装箱号</option>
+            <option value="container" data-lang="en">Container No.</option>
+            <option value="bl" data-lang="zh">提单号 (B/L)</option>
+            <option value="bl" data-lang="en">B/L Number</option>
+          </select>
+          <input type="text" id="track-number" style="flex:1;min-width:200px" data-lang-zh-placeholder="输入集装箱号或提单号..." data-lang-en-placeholder="Enter container or BL number..." placeholder="输入集装箱号或提单号...">
+          <button id="track-search" data-lang="zh">追踪</button>
+          <button id="track-search" data-lang="en">Track</button>
+        </div>
+
+        <div class="tool-result" id="track-result"></div>
+
+        <div class="tool-note">
+          <span data-lang="zh">💡 集装箱号格式：4位字母 + 7位数字（如 MSCU1234567）。支持 COSCO、MSC、Maersk、CMA-CGM、ONE、HMM、Evergreen 等主流船公司。</span>
+          <span data-lang="en">💡 Container number format: 4 letters + 7 digits (e.g., MSCU1234567). Supports COSCO, MSC, Maersk, CMA-CGM, ONE, HMM, Evergreen, and more.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <h4>Longsday</h4>
+      <p data-lang="zh">国际供应链 · 宁波<br>Delivery goods to you from worldwide</p>
+      <p data-lang="en">Supply Chain · Ningbo<br>Delivery goods to you from worldwide</p>
+    </div>
+    <div>
+      <h4 data-lang="zh">服务</h4><h4 data-lang="en">Services</h4>
+      <a href="services.html" data-lang="zh">海运</a><a href="services.html" data-lang="en">Ocean Freight</a>
+      <a href="services.html" data-lang="zh">空运</a><a href="services.html" data-lang="en">Air Freight</a>
+      <a href="services.html" data-lang="zh">铁路</a><a href="services.html" data-lang="en">Railway</a>
+      <a href="services.html" data-lang="zh">DDP / FBA</a><a href="services.html" data-lang="en">DDP / FBA</a>
+    </div>
+    <div>
+      <h4 data-lang="zh">工具</h4><h4 data-lang="en">Tools</h4>
+      <a href="tools.html" data-lang="zh">HS 编码查询</a><a href="tools.html" data-lang="en">HS Code Lookup</a>
+      <a href="tools.html" data-lang="zh">集装箱追踪</a><a href="tools.html" data-lang="en">Container Tracking</a>
+      <a href="cases.html" data-lang="zh">案例</a><a href="cases.html" data-lang="en">Case Studies</a>
+    </div>
+    <div>
+      <h4 data-lang="zh">联系方式</h4><h4 data-lang="en">Contact</h4>
+      <a href="mailto:lily-qian@longsday.com">lily-qian@longsday.com</a>
+      <a href="tel:+8618658282025">+86 186-5828-2025</a>
+      <a href="contact.html" data-lang="zh">宁波市鄞州区姚隘路796号</a>
+      <a href="contact.html" data-lang="en">Ningbo, Zhejiang, China</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Longsday. All rights reserved.</span>
+    <span data-lang="zh">宁波隆事达供应链有限公司</span>
+    <span data-lang="en">Ningbo Longsday Supply Chain Co.,Ltd</span>
+  </div>
+</footer>
+
+<script src="js/i18n.js"></script>
+<script src="js/main.js"></script>
+<script src="js/tools.js"></script>
+</body>
+</html>

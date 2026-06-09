@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Studies — Longsday | 案例</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23162d59'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'>L</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/logo.png" alt="Longsday Logo">
+      <span>Longsday</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html" data-lang="zh">首页</a><a href="index.html" data-lang="en">Home</a></li>
+      <li><a href="services.html" data-lang="zh">服务</a><a href="services.html" data-lang="en">Services</a></li>
+      <li><a href="about.html" data-lang="zh">关于</a><a href="about.html" data-lang="en">About</a></li>
+      <li><a href="tools.html" data-lang="zh">工具</a><a href="tools.html" data-lang="en">Tools</a></li>
+      <li><a href="cases.html" data-lang="zh">案例</a><a href="cases.html" data-lang="en">Cases</a></li>
+      <li><a href="contact.html" data-lang="zh">联系</a><a href="contact.html" data-lang="en">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-switch">
+        <button data-lang-val="en">EN</button>
+        <button data-lang-val="zh">中文</button>
+      </div>
+      <a href="contact.html" class="nav-cta" data-lang="zh">获取报价</a>
+      <a href="contact.html" class="nav-cta" data-lang="en">Get Quote</a>
+      <button class="menu-toggle" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</nav>
+
+<section class="page-header">
+  <h1 data-lang="zh">案例展示</h1>
+  <h1 data-lang="en">Case Studies</h1>
+  <p data-lang="zh">真实物流案例，见证我们的专业能力</p>
+  <p data-lang="en">Real logistics cases — see our expertise in action</p>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="cases-grid" id="cases-grid">
+      <!-- Dynamically loaded from data/cases.js -->
+    </div>
+    <div id="cases-empty" style="display:none;text-align:center;padding:4rem 2rem;color:var(--gray-500)">
+      <p data-lang="zh">暂无案例。请通过后台管理页面上传案例内容。</p>
+      <p data-lang="en">No cases yet. Please upload case studies via the admin page.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <h4>Longsday</h4>
+      <p data-lang="zh">国际供应链 · 宁波<br>Delivery goods to you from worldwide</p>
+      <p data-lang="en">Supply Chain · Ningbo<br>Delivery goods to you from worldwide</p>
+    </div>
+    <div>
+      <h4 data-lang="zh">服务</h4><h4 data-lang="en">Services</h4>
+      <a href="services.html" data-lang="zh">海运</a><a href="services.html" data-lang="en">Ocean Freight</a>
+      <a href="services.html" data-lang="zh">空运</a><a href="services.html" data-lang="en">Air Freight</a>
+      <a href="services.html" data-lang="zh">铁路</a><a href="services.html" data-lang="en">Railway</a>
+      <a href="services.html" data-lang="zh">DDP / FBA</a><a href="services.html" data-lang="en">DDP / FBA</a>
+    </div>
+    <div>
+      <h4 data-lang="zh">工具</h4><h4 data-lang="en">Tools</h4>
+      <a href="tools.html" data-lang="zh">HS 编码查询</a><a href="tools.html" data-lang="en">HS Code Lookup</a>
+      <a href="tools.html" data-lang="zh">集装箱追踪</a><a href="tools.html" data-lang="en">Container Tracking</a>
+      <a href="cases.html" data-lang="zh">案例</a><a href="cases.html" data-lang="en">Case Studies</a>
+    </div>
+    <div>
+      <h4 data-lang="zh">联系方式</h4><h4 data-lang="en">Contact</h4>
+      <a href="mailto:lily-qian@longsday.com">lily-qian@longsday.com</a>
+      <a href="tel:+8618658282025">+86 186-5828-2025</a>
+      <a href="contact.html" data-lang="zh">宁波市鄞州区姚隘路796号</a>
+      <a href="contact.html" data-lang="en">Ningbo, Zhejiang, China</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Longsday. All rights reserved.</span>
+    <span data-lang="zh">宁波隆事达供应链有限公司</span>
+    <span data-lang="en">Ningbo Longsday Supply Chain Co.,Ltd</span>
+  </div>
+</footer>
+
+<script src="js/i18n.js"></script>
+<script src="js/main.js"></script>
+<script src="data/cases.js"></script>
+<script>
+/* Render cases from data */
+(function() {
+  'use strict';
+
+  function renderCases() {
+    var grid = document.getElementById('cases-grid');
+    var empty = document.getElementById('cases-empty');
+    if (!grid) return;
+
+    if (typeof LONGSDAY_CASES === 'undefined' || !LONGSDAY_CASES.length) {
+      grid.innerHTML = '';
+      if (empty) empty.style.display = 'block';
+      return;
+    }
+
+    if (empty) empty.style.display = 'none';
+    var lang = document.documentElement.getAttribute('lang') || 'en';
+    var html = '';
+
+    LONGSDAY_CASES.forEach(function(c) {
+      html += '<article class="case-card">';
+      if (c.thumbs && c.thumbs.length) {
+        var totalThumbs = c.thumbs.length;
+        var showCount = Math.min(totalThumbs, 6);
+        html += '<div class="case-gallery" style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;height:220px;overflow:hidden">';
+        for (var i = 0; i < showCount; i++) {
+          var t = c.thumbs[i];
+          if (i < 5) {
+            html += '<div style="overflow:hidden"><img src="' + t + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;min-height:110px"></div>';
+          } else {
+            html += '<div style="position:relative;overflow:hidden"><img src="' + t + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;min-height:110px;opacity:0.35"><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:var(--navy)">+' + (totalThumbs - 5) + '</span></div>';
+          }
+        }
+        html += '</div>';
+        html += '<div style="padding:4px 8px;font-size:0.72rem;color:var(--gray-500);background:var(--cream-light)">' + totalThumbs + ' photos</div>';
+      } else if (c.thumb) {
+        html += '<div class="case-thumb"><img src="' + c.thumb + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover"></div>';
+      } else {
+        html += '<div class="case-thumb">' +
+          '<div style="text-align:center">' +
+          '<div style="font-size:2rem;margin-bottom:0.5rem">📦</div>' +
+          '<span data-lang="zh">案例图片 (待上传)</span>' +
+          '<span data-lang="en">Case Image (pending)</span>' +
+          '</div></div>';
+      }
+      html += '<div class="case-body">';
+      html += '<span class="tag" data-lang="zh">' + (c.tagZh || c.tag) + '</span>';
+      html += '<span class="tag" data-lang="en">' + c.tag + '</span>';
+      html += '<h3 data-lang="zh">' + c.titleZh + '</h3>';
+      html += '<h3 data-lang="en">' + c.title + '</h3>';
+      html += '<p data-lang="zh">' + c.summaryZh + '</p>';
+      html += '<p data-lang="en">' + c.summary + '</p>';
+      if (c.date) {
+        html += '<span style="font-size:0.78rem;color:var(--gray-500)">' + c.date + '</span>';
+      }
+      html += '</div></article>';
+    });
+
+    grid.innerHTML = html;
+  }
+
+  // Initial render  // Initial render
+  document.addEventListener('DOMContentLoaded', renderCases);
+
+  // Re-render on language change
+  var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(m) {
+      if (m.attributeName === 'lang') renderCases();
+    });
+  });
+  observer.observe(document.documentElement, { attributes: true });
+
+})();
+</script>
+</body>
+</html>
