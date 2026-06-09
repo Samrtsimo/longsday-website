@@ -60,22 +60,29 @@
     <!-- HS Code Panel -->
     <div class="tool-panel active" data-panel="hscode">
       <div class="tool-card">
-        <h3 data-lang="zh">HS 编码查询</h3>
+        <h3 data-lang="zh">HS 编码查询（本地数据库）</h3>
         <h3 data-lang="en">HS Code Lookup</h3>
-        <p data-lang="zh">输入 HS 编码（如 847130）或商品名称查询对应的海关编码分类。</p>
-        <p data-lang="en">Enter an HS code (e.g., 847130) or product name to find the corresponding customs classification.</p>
+        <p data-lang="zh">输入 HS 编码或商品名称（中/英文），实时检索中国海关进出口税则数据库。</p>
+        <p data-lang="en">Search by HS code or product name (CN/EN) against China Customs tariff database in real-time.</p>
 
         <div class="search-box">
-          <input type="text" id="hs-input" data-lang-zh-placeholder="输入 HS 编码或商品名称..." data-lang-en-placeholder="Enter HS code or product name..." placeholder="输入 HS 编码或商品名称...">
-          <button id="hs-search" data-lang="zh">查询</button>
-          <button id="hs-search" data-lang="en">Search</button>
+          <input type="text" id="hs-input" data-lang-zh-placeholder="输入 HS 编码（如 847130）或商品名称（如 笔记本电脑）..." data-lang-en-placeholder="Enter HS code or product name..." placeholder="输入 HS 编码或商品名称...">
+          <!-- Real-time search: no button needed -->
         </div>
 
-        <div class="tool-result" id="hs-result"></div>
+        <div class="tool-result" id="hs-result">
+          <div class="hs-placeholder">
+            <div class="hs-placeholder-icon">🔍</div>
+            <p data-lang="zh">输入 HS 编码（如 <strong>847130</strong>）或商品名称（如 <strong>笔记本电脑</strong>）开始查询</p>
+            <p data-lang="en">Enter an HS code (e.g., <strong>847130</strong>) or product name (e.g., <strong>laptop</strong>) to search</p>
+            <p class="hs-placeholder-hint" data-lang="zh">支持 4–10 位编码 · 中英文关键词 · 实时模糊搜索</p>
+            <p class="hs-placeholder-hint" data-lang="en">Supports 4–10 digit codes · Chinese & English keywords · Real-time fuzzy search</p>
+          </div>
+        </div>
 
         <div class="tool-note">
-          <span data-lang="zh">💡 数据来源：中国海关总署 & WCO 协调制度。完整分类请访问 </span>
-          <span data-lang="en">💡 Data source: China Customs & WCO Harmonized System. For full classification visit </span>
+          <span data-lang="zh">💡 数据来源：中国海关总署进出口税则。首次加载约 290KB (gzip)，浏览器自动缓存。完整申报要素请访问 </span>
+          <span data-lang="en">💡 Data: China Customs Tariff. ~300KB initial load, cached by browser. Full details at </span>
           <a href="http://www.hscode.net/IntegrateQueries/QueryYS" target="_blank" rel="noopener">hscode.net</a>
         </div>
       </div>

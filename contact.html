@@ -102,7 +102,9 @@
         <h3 data-lang="zh" style="margin-bottom:1.5rem">发送询价</h3>
         <h3 data-lang="en" style="margin-bottom:1.5rem">Send an Inquiry</h3>
 
-        <form id="contact-form" action="/api/contact" method="POST">
+        <form id="contact-form" action="https://api.web3forms.com/submit" method="POST">
+          <input type="hidden" name="access_key" value="b0f00ef8-bce2-4610-a543-e273c74b3d2d">
+          <input type="hidden" name="subject" value="[Longsday] 网站询价">
           <div class="form-row">
             <div class="form-group">
               <label data-lang="zh">姓名 *</label>
@@ -233,15 +235,19 @@
 
       status.style.display = 'none';
 
+      // Add access_key to data object
+      data.access_key = 'b0f00ef8-bce2-4610-a543-e273c74b3d2d';
+      data.subject = '[Longsday] ' + (lang === 'zh' ? '网站询价' : 'Website Inquiry');
+
       fetch(form.getAttribute('action'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       })
-      .then(function(resp) { return resp.json().then(function(json) { return { ok: resp.ok, json: json }; }); })
-      .then(function(result) {
+      .then(function(resp) { return resp.json(); })
+      .then(function(json) {
         status.style.display = 'block';
-        if (result.ok) {
+        if (json.success) {
           status.style.background = '#e8f5e9';
           status.style.color = '#2e7d32';
           status.textContent = lang === 'zh'
